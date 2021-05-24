@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "trusted-records",
+    "icon": "./assets/favicon.png",
+    "version": "1.0.0",
+    "slug": "your-app-slug",
+    "ios": {
+      "bundleIdentifier": "com.truststamp.hague",
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "com.truststamp.hague",
+      "versionCode": 1
+    }
+  }
+}

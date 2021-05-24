@@ -4,7 +4,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import BarcodeMask from 'react-native-barcode-mask';
 import GeneralModal from './modal';
 
-function QRReader({ navigation }) {
+function QRReader({ route, navigation }) {
     const finderWidth = 280;
     const finderHeight = 230;
     const width = Dimensions.get('window').width;
@@ -56,16 +56,15 @@ function QRReader({ navigation }) {
     return (
         <View style={styles.container}>
             {successScanned?.is_scanned ?
-                // navigation.navigate("Success Screen", { data: successScanned?.data }) :
                 (
-                    <GeneralModal data={successScanned?.data} successScanned={successScanned} setSuccessScanned={setSuccessScanned} />
+                    <GeneralModal navigation={navigation} data={successScanned?.data} successScanned={successScanned} setSuccessScanned={setSuccessScanned} />
                 ) :
                 (
                     <BarCodeScanner onBarCodeScanned={handleBarCodeScanned}
                         style={styles.QRContainer}>
                         <BarcodeMask edgeColor="#62B1F6" showAnimatedLine edgeRadius={10} outerMaskOpacity={0.7} />
-                        <Text style={{ paddingVertical: 230, color: 'white' }} >Vaccination Records</Text>
-                        {scanned && <Button title="Scan Again" onPress={() => setScanned(false)} />}
+                        <Text style={styles.text} >Vaccination Records</Text>
+                        {scanned && <Button style={styles.button} title="Scan Again" onPress={() => setScanned(false)} />}
                         {console.log(successScanned)}
                     </BarCodeScanner>
                 )
@@ -89,10 +88,37 @@ const styles = StyleSheet.create({
         // width: '70%'
     },
     text: {
-        color: 'rgb(59,108,212)',
-        fontSize: 42,
-        fontWeight: '100',
-        textAlign: 'center',
+        // flex: 1,
+        padding: 80,
+        // backgroundColor: 'white',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 17
+    },
+    button: {
+        flex: 1,
+        marginBottom: 40,
+        // backgroundColor: 'white',
+        // flexDirection: 'column',
+        // justifyContent:'space-between',
+        alignItems: 'center',
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 17
+    },
+    buttomText: {
+        flex: 1,
+        // marginTop: 90,
+        // backgroundColor: 'white',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 17
     },
     title: {
         fontSize: 20,

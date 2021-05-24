@@ -8,33 +8,27 @@ import { Provider } from "react-redux";
 //Custom Components
 import QRReader from './components/QRScanner';
 import QRScanResult from './components/QRScanResult';
-import { store } from './redux/store';
 import TSLogo from './assets/TSLogo.png';
 import HeaderLogo from './components/shared/headerLogo';
+import TakeSelfieInfo from './components/takeSelfieInfo';
+import Verification from './components/verification';
+import QRPass from './components/QRPass';
 
+///
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import rootReducer from './redux/reducers/rootReducer';
 
-function SuccessScreen({ route, navigation }) {
-  const { data } = route.params;
-  return (
-    <View style={{ flex: 1, padding: 60 }}>
-      {data ?
-        (<Text>{data}</Text>) :
-        (<Text>NO VALID DATA</Text>)
-      }
-    </View>
-  )
-}
-function DettailScreen() {
-  return (
-    <View>
-      <Text>Detail SCREEN</Text>
-    </View>
-  )
-}
 
 const Stack = createStackNavigator()
 
 export default function App() {
+  const middleware = [
+    thunk
+  ]
+  const store = createStore(
+    rootReducer, applyMiddleware(...middleware)
+  );
   const defaultOptions = {
     headerStyle: {
       backgroundColor: '#1a1a1a',
@@ -52,9 +46,10 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator initialRouteName="QR Reader" screenOptions={defaultOptions}>
           <Stack.Screen name="QR Reader" component={QRReader} />
+          <Stack.Screen name="Take Selfie Info" component={TakeSelfieInfo} />
           <Stack.Screen name="QR Scan Result" component={QRScanResult} />
-          <Stack.Screen name="Detail" component={DettailScreen} />
-          <Stack.Screen name="Success Screen" component={SuccessScreen} />
+          <Stack.Screen name="Verification" component={Verification} />
+          <Stack.Screen name="QR Pass" component={QRPass} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
