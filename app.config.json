@@ -4,6 +4,7 @@
     "icon": "./assets/favicon.png",
     "version": "1.0.0",
     "slug": "your-app-slug",
+    "orientation": "portrait",
     "ios": {
       "bundleIdentifier": "com.truststamp.hague",
       "buildNumber": "1.0.0"

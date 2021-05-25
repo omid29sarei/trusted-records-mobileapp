@@ -4,7 +4,31 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import BarcodeMask from 'react-native-barcode-mask';
 import GeneralModal from './modal';
 
+//TESTING STORAGE
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 function QRReader({ route, navigation }) {
+    // const storeData = async (value) => {
+    //     try {
+    //         const jsonValue = JSON.stringify(value)
+    //         await AsyncStorage.setItem('qrData', jsonValue)
+    //     } catch (e) {
+    //         // saving error
+    //         console.log(e, 'Error while saving data')
+    //     }
+    // }
+
+    // const getData = async () => {
+    //     try {
+    //         const jsonValue = await AsyncStorage.getItem('qrData')
+    //         return jsonValue != null ? JSON.parse(jsonValue) : null;
+    //     } catch (e) {
+    //         // error reading value
+    //     }
+    // }
+    // let savedQRData = getData()
+    // console.log(savedQRData, 'check load function')
     const finderWidth = 280;
     const finderHeight = 230;
     const width = Dimensions.get('window').width;
@@ -25,6 +49,14 @@ function QRReader({ route, navigation }) {
     useEffect(() => {
     }, [successScanned?.is_scanned])
 
+    // useEffect(() => {
+    //     if (savedQRData) {
+    //         navigation.navigate('QR Scan Result')
+    //     }
+    // }, [savedQRData])
+
+
+
     const handleBarCodeScanned = (scanningResult) => {
         if (!scanned) {
             const { type, data, bounds: { origin } = {} } = scanningResult;
@@ -36,6 +68,7 @@ function QRReader({ route, navigation }) {
             }
             if (data) {
                 console.log(data, 'QR data')
+                // storeData(data)
                 setSuccessScanned({
                     is_scanned: true,
                     data: data

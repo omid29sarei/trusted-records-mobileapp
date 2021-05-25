@@ -3,11 +3,14 @@ import { View, Text, StyleSheet, Image, ImageBackground, TouchableOpacity, Scrol
 import FullStatusImg from '../assets/full-vaccinated-logo.png';
 import Avatar from '../assets/avatar.png';
 import FullyVaccinatedLogo from '../assets/full-vaccinated-logo.png';
+import PartialVaccinatedLogo from '../assets/partial-vaccinated-logo.png';
+import NotVaccinatedLogo from '../assets/not-vaccinated-logo.png';
 import QRBG from '../assets/BG.png';
 import QRCode from 'react-native-qrcode-svg';
 
 function QRPass({ route, navigation }) {
-    // const { data } = route.params;
+    const { data, sortedData } = route.params;
+    console.log(sortedData, 'sortedData from qr pass')
     // const goToVerification = () => {
     //     navigation.navigate('')
     // }
@@ -46,8 +49,33 @@ function QRPass({ route, navigation }) {
         { name: "COVID BOOSTER", expiry: '10 September 2021' },
         { name: "COVID BOOSTER-2", expiry: '10 June 2021' },
         { name: "COVID BOOSTER-3", expiry: '10 July 2021' },
-
     ]
+    const imagePicker = () => {
+        switch (sortedData?.vaccinationStatus) {
+            case "F":
+                return FullyVaccinatedLogo
+            case "P":
+                return PartialVaccinatedLogo
+            case "N":
+                return NotVaccinatedLogo
+            default:
+                break;
+        }
+    }
+    let imageSource = imagePicker()
+    const labelPicker = () => {
+        switch (sortedData?.vaccinationStatus) {
+            case "F":
+                return "Fully Vaccinated"
+            case "P":
+                return "Partially Vaccinated"
+            case "N":
+                return "Not Vaccinated"
+            default:
+                break;
+        }
+    }
+    let vaccinationStatusLabel = labelPicker()
     return (
         <View style={styles.container}>
             <ScrollView>
@@ -55,7 +83,7 @@ function QRPass({ route, navigation }) {
                 <View style={{ backgroundColor: '#efefef', height: 70, flexDirection: 'row', justifyContent: 'space-between', padding: 20 }}>
                     <View>
                         <Text style={{ color: '#aaaaaa', fontWeight: 'bold', marginBottom: 5 }}>NAME</Text>
-                        <Text style={{ color: 'black', fontWeight: 'bold' }}>John Doe</Text>
+                        <Text style={{ color: 'black', fontWeight: 'bold' }}>{sortedData?.name}{' '}{sortedData?.surname}</Text>
                     </View>
                     <View>
                         <Text style={{ color: '#aaaaaa', fontWeight: 'bold', marginBottom: 5 }}>VACCINATION RECORD</Text>
@@ -65,12 +93,12 @@ function QRPass({ route, navigation }) {
                 {/* VACCINATION STATUS AND LOGO */}
                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
                     <View>
-                        <Image source={FullyVaccinatedLogo} />
+                        <Image style={styles.logo} source={imageSource} />
                     </View>
                     <View>
                         <View style={{ marginBottom: 5 }}>
                             <Text style={{ color: '#aaaaaa', fontWeight: 'bold', marginBottom: 5 }}>STATUS</Text>
-                            <Text style={{ color: 'black', fontWeight: 'bold', marginBottom: 5, fontSize: 25 }}>Fully Vaccinated</Text>
+                            <Text style={{ color: 'black', fontWeight: 'bold', marginBottom: 5, fontSize: 25 }}>{vaccinationStatusLabel}</Text>
                         </View>
                         <View>
                             <Text style={{ color: '#aaaaaa', fontWeight: 'bold', marginBottom: 5 }}>DIGITALLY SIGNED</Text>
@@ -117,6 +145,10 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         flexDirection: 'column',
         // justifyContent: 'space-around',
+    },
+    logo: {
+        width: 150,
+        height: 150
     },
     image: {
         flex: 1,

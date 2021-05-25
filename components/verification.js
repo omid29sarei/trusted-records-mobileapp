@@ -7,6 +7,8 @@ import { verification } from '../redux/actions/actions';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 function Verification({ route, navigation }) {
+    const { data, sortedData } = route.params;
+    console.log(sortedData, 'data from verification')
     const [startCamera, setStartCamera] = React.useState(true)
     const [capturedImage, setCapturedImage] = React.useState(null)
     const [type, setType] = React.useState(Camera.Constants.Type.front);
@@ -17,12 +19,14 @@ function Verification({ route, navigation }) {
     let camera
     const __takePicture = async () => {
         if (!camera) return
-        const photo = await camera.takePictureAsync()
-        console.log(photo?.uri)
+        const photo = await camera.takePictureAsync({
+            base64: true
+        })
+        // console.log(photo?.uri)
         // setCapturedImage(photo?.uri)
-
-        navigation.navigate('QR Pass')
-        // dispatch(verification(photo?.uri))
+        // console.log(photo, 'PHOTO OBJECT')
+        navigation.navigate('QR Pass', { data: data, sortedData: sortedData })
+        dispatch(verification(photo?.base64, sortedData?.vaccinationStatus))
 
     }
     React.useEffect(() => {

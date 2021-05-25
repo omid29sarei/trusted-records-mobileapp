@@ -1,21 +1,24 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
 import FullStatusImg from '../assets/full-vaccinated-logo.png';
+import digitallySigned from '../assets/signed.gif';
 import QRBG from '../assets/BG.png';
 import QRCode from 'react-native-qrcode-svg';
 
 function QRScanResult({ route, navigation }) {
-    const { data } = route.params;
+    const { data, sortedData } = route.params;
+    console.log(sortedData, 'sortedData from qr result')
     const goToTakeSelfiePage = () => {
-        navigation.navigate('Take Selfie Info')
+        navigation.navigate('Take Selfie Info', { data: data, sortedData: sortedData })
     }
+
     return (
         <View style={styles.container}>
             <ScrollView>
                 <View style={{ backgroundColor: '#efefef', height: 70, flexDirection: 'row', justifyContent: 'space-between', padding: 20 }}>
                     <View>
                         <Text style={{ color: '#aaaaaa', fontWeight: 'bold', marginBottom: 5 }}>NAME</Text>
-                        <Text style={{ color: 'black', fontWeight: 'bold' }}>John Doe</Text>
+                        <Text style={{ color: 'black', fontWeight: 'bold' }}>{sortedData?.name}{' '}{sortedData?.surname}</Text>
                     </View>
                     <View>
                         <Text style={{ color: '#aaaaaa', fontWeight: 'bold', marginBottom: 5 }}>VACCINATION RECORD</Text>
@@ -23,9 +26,9 @@ function QRScanResult({ route, navigation }) {
                     </View>
                 </View>
                 <View style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 25 }}>
-                    <Image source={FullStatusImg} />
+                    <Image source={digitallySigned} />
                     <Text style={{ color: '#aaaaaa', fontWeight: 'bold', marginBottom: 5 }}>STATUS</Text>
-                    <Text style={{ color: 'black', fontWeight: 'bold', marginBottom: 15, fontSize: 25 }}>Fully Vaccinated</Text>
+                    <Text style={{ color: 'black', fontWeight: 'bold', marginBottom: 15, fontSize: 25 }}>Digitally Signed</Text>
                     <TouchableOpacity
                         style={styles.button}
                         onPress={goToTakeSelfiePage}
