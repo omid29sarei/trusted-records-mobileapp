@@ -7,13 +7,16 @@ import PartialVaccinatedLogo from '../assets/partial-vaccinated-logo.png';
 import NotVaccinatedLogo from '../assets/not-vaccinated-logo.png';
 import QRBG from '../assets/BG.png';
 import QRCode from 'react-native-qrcode-svg';
+import CryptoES from 'crypto-es';
 
 function QRPass({ route, navigation }) {
-    const { data, sortedData } = route.params;
+    const { data, sortedData, originalData, dekKey } = route.params;
     console.log(sortedData, 'sortedData from qr pass')
     // const goToVerification = () => {
     //     navigation.navigate('')
     // }
+    const decrypted = CryptoES.AES.decrypt(sortedData?.enc_qrData, dekKey, { mode: CryptoES.mode.CFB, iv: sortedData?.iv });
+    console.log(decrypted, 'decrypted after dek key')
     const monthLookup = (month) => {
         switch (month) {
             case "01":
@@ -47,8 +50,7 @@ function QRPass({ route, navigation }) {
 
     const mockData = [
         { name: "COVID BOOSTER", expiry: '10 September 2021' },
-        { name: "COVID BOOSTER-2", expiry: '10 June 2021' },
-        { name: "COVID BOOSTER-3", expiry: '10 July 2021' },
+        { name: "COVID BOOSTER-2", expiry: '10 June 2021' }
     ]
     const imagePicker = () => {
         switch (sortedData?.vaccinationStatus) {
@@ -124,7 +126,7 @@ function QRPass({ route, navigation }) {
                             <View style={styles.qr}>
                                 <QRCode
                                     size={250}
-                                    value={'dajhgkjgkjgjkhgjkhgkjhgjkhgjkhgkjhgjhgjkhgkhgkjhta'}
+                                    value={originalData}
                                     quietZone={10}
                                 />
                             </View>

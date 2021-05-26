@@ -7,7 +7,6 @@ import QRCode from 'react-native-qrcode-svg';
 
 function GeneralModal({ navigation, data, successScanned, setSuccessScanned }) {
     const [isModalVisible, setModalVisible] = useState(false);
-    const counter = useSelector(state => state.counter);
     const dispatch = useDispatch();
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
@@ -44,7 +43,7 @@ function GeneralModal({ navigation, data, successScanned, setSuccessScanned }) {
     }
     const goToResultPage = () => {
         toggleModal()
-        navigation.navigate('QR Scan Result', { data: data, sortedData: sortedData })
+        navigation.navigate('QR Scan Result', { data: data, sortedData: sortedData, originalData: data })
         setSuccessScanned({
             is_scanned: false
         })

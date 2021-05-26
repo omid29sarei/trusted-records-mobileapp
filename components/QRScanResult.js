@@ -6,10 +6,10 @@ import QRBG from '../assets/BG.png';
 import QRCode from 'react-native-qrcode-svg';
 
 function QRScanResult({ route, navigation }) {
-    const { data, sortedData } = route.params;
+    const { data, sortedData, originalData } = route.params;
     console.log(sortedData, 'sortedData from qr result')
     const goToTakeSelfiePage = () => {
-        navigation.navigate('Take Selfie Info', { data: data, sortedData: sortedData })
+        navigation.navigate('Take Selfie Info', { data: data, sortedData: sortedData, originalData: originalData })
     }
 
     return (

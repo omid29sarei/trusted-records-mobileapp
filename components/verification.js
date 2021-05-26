@@ -7,11 +7,15 @@ import { verification } from '../redux/actions/actions';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 function Verification({ route, navigation }) {
-    const { data, sortedData } = route.params;
+    const { data, sortedData, originalData } = route.params;
     console.log(sortedData, 'data from verification')
-    const [startCamera, setStartCamera] = React.useState(true)
-    const [capturedImage, setCapturedImage] = React.useState(null)
+    const [startCamera, setStartCamera] = React.useState(true);
+    const [capturedImage, setCapturedImage] = React.useState(null);
     const [type, setType] = React.useState(Camera.Constants.Type.front);
+    const isVerificationSuccessfull = useSelector(state => state.main?.verificationResponse?.success)
+    const dekKey = useSelector(state => state.main?.verificationResponse?.dek_key)
+    const failedVerification = useSelector(state => state.main?.verificationFailedResponse)
+    let cameraText = "Take Photo";
     const dispatch = useDispatch();
     const goToVerification = () => {
         navigation.navigate('Verification')
@@ -23,10 +27,10 @@ function Verification({ route, navigation }) {
             base64: true
         })
         // console.log(photo?.uri)
-        // setCapturedImage(photo?.uri)
         // console.log(photo, 'PHOTO OBJECT')
-        navigation.navigate('QR Pass', { data: data, sortedData: sortedData })
-        dispatch(verification(photo?.base64, sortedData?.vaccinationStatus))
+        // navigation.navigate('QR Pass', { data: data, sortedData: sortedData, originalData: originalData })
+        dispatch(verification(photo?.base64, sortedData?.enc_dek))
+        setCapturedImage(photo?.base64)
 
     }
     React.useEffect(() => {
@@ -39,6 +43,16 @@ function Verification({ route, navigation }) {
             } Camera
         })();
     }, []);
+    React.useEffect(() => {
+        if (dekKey?.length > 0) {
+            setCapturedImage(null)
+            navigation.navigate('QR Pass', { data: data, sortedData: sortedData, originalData: originalData, dekKey: dekKey })
+        }
+        if (!isVerificationSuccessfull) {
+            setCapturedImage(null)
+            cameraText = "ReTake Photo"
+        }
+    }, [dekKey, failedVerification])
     return (
         <View style={styles.container}>
             {capturedImage ?
@@ -73,7 +87,7 @@ function Verification({ route, navigation }) {
                             style={styles.button}
                             onPress={__takePicture}
                         >
-                            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 20, padding: 15, textAlign: 'center' }}>Take Photo</Text>
+                            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 20, padding: 15, textAlign: 'center' }}>{cameraText}</Text>
                         </TouchableOpacity>
 
                     </ImageBackground>

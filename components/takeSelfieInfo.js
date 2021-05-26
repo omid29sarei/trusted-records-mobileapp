@@ -5,10 +5,10 @@ import Avatar from '../assets/avatar.png';
 import QRCode from 'react-native-qrcode-svg';
 
 function TakeSelfieInfo({ route, navigation }) {
-    const { data, sortedData } = route.params;
+    const { data, sortedData, originalData } = route.params;
     console.log(sortedData, 'sortedData from take selfie')
     const goToVerification = () => {
-        navigation.navigate('Verification', { data: data, sortedData: sortedData })
+        navigation.navigate('Verification', { data: data, sortedData: sortedData, originalData: originalData })
     }
     return (
         <View style={styles.container}>

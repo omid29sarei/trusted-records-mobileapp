@@ -1,4 +1,4 @@
-import { VERIFICATION } from './actionTypes';
+import { VERIFICATION, VERIFICATION_FAILED } from './actionTypes';
 import axios from "axios";
 import mime from "mime";
 import testPic from '../../assets/BG.png';
@@ -56,5 +56,9 @@ export const verification = (imageUri, testData) => dispatch => {
         })
         .catch(error => {
             console.log(error)
+            // return dispatch({
+            //     type: VERIFICATION_FAILED,
+            //     payload: response.data
+            // })
         })
 }
