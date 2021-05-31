@@ -19,9 +19,9 @@ function GeneralModal({ navigation, data, successScanned, setSuccessScanned }) {
         let surname = splittedData[0].split(',')[1]
         let vaccinationStatus = splittedData[0].split(',')[2]
         const enc_dek = splittedData[1]
-        const digitalSignature = splittedData[2]
+        const digitalSignature = splittedData[4]
         const iv = splittedData[3]
-        const enc_qrData = splittedData[4]
+        const enc_qrData = splittedData[2]
 
         const sortedData = {
             name,
@@ -44,6 +44,7 @@ function GeneralModal({ navigation, data, successScanned, setSuccessScanned }) {
     const goToResultPage = () => {
         toggleModal()
         navigation.navigate('QR Scan Result', { data: data, sortedData: sortedData, originalData: data })
+        // navigation.navigate('QR Pass')
         setSuccessScanned({
             is_scanned: false
         })

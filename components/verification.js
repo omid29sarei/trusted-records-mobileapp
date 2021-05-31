@@ -13,6 +13,7 @@ function Verification({ route, navigation }) {
     const [capturedImage, setCapturedImage] = React.useState(null);
     const [type, setType] = React.useState(Camera.Constants.Type.front);
     const isVerificationSuccessfull = useSelector(state => state.main?.verificationResponse?.success)
+    console.log(isVerificationSuccessfull, 'isVerificationSuccessfullisVerificationSuccessfull')
     const dekKey = useSelector(state => state.main?.verificationResponse?.dek_key)
     const failedVerification = useSelector(state => state.main?.verificationFailedResponse)
     let cameraText = "Take Photo";
@@ -28,10 +29,13 @@ function Verification({ route, navigation }) {
         })
         // console.log(photo?.uri)
         // console.log(photo, 'PHOTO OBJECT')
-        // navigation.navigate('QR Pass', { data: data, sortedData: sortedData, originalData: originalData })
-        dispatch(verification(photo?.base64, sortedData?.enc_dek))
+        // navigation.navigate('QR Pass', { data: data, sortedData: sortedData, originalData: originalData }
+        dispatch(verification(photo?.base64, sortedData?.enc_dek, sortedData?.enc_qrData, sortedData?.iv))
         setCapturedImage(photo?.base64)
 
+    }
+    const byPass = () => {
+        navigation.navigate('QR Pass', { data: data, sortedData: sortedData, originalData: originalData, dekKey: dekKey })
     }
     React.useEffect(() => {
         (async () => {
@@ -48,11 +52,11 @@ function Verification({ route, navigation }) {
             setCapturedImage(null)
             navigation.navigate('QR Pass', { data: data, sortedData: sortedData, originalData: originalData, dekKey: dekKey })
         }
-        if (!isVerificationSuccessfull) {
+        if (isVerificationSuccessfull == false) {
             setCapturedImage(null)
             cameraText = "ReTake Photo"
         }
-    }, [dekKey, failedVerification])
+    }, [dekKey, failedVerification, isVerificationSuccessfull, cameraText])
     return (
         <View style={styles.container}>
             {capturedImage ?
@@ -87,6 +91,7 @@ function Verification({ route, navigation }) {
                             style={styles.button}
                             onPress={__takePicture}
                         >
+                            {isVerificationSuccessfull == false ? <Text>The verification failed. Please Take another photo</Text> : null}
                             <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 20, padding: 15, textAlign: 'center' }}>{cameraText}</Text>
                         </TouchableOpacity>
 

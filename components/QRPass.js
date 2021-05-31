@@ -8,15 +8,71 @@ import NotVaccinatedLogo from '../assets/not-vaccinated-logo.png';
 import QRBG from '../assets/BG.png';
 import QRCode from 'react-native-qrcode-svg';
 import CryptoES from 'crypto-es';
+import base64 from 'react-native-base64';
+const binascii = require('binascii');
 
 function QRPass({ route, navigation }) {
     const { data, sortedData, originalData, dekKey } = route.params;
-    console.log(sortedData, 'sortedData from qr pass')
     // const goToVerification = () => {
     //     navigation.navigate('')
     // }
-    const decrypted = CryptoES.AES.decrypt(sortedData?.enc_qrData, dekKey, { mode: CryptoES.mode.CFB, iv: sortedData?.iv });
-    console.log(decrypted, 'decrypted after dek key')
+    // console.log("KEY: ", dekKey)
+
+    const iv = base64.decode(sortedData?.iv)
+    // console.log("IV: ", iv)
+    const key = base64.decode(dekKey)
+    // console.log("KEY: ", key)
+    const ct = base64.decode(sortedData?.enc_qrData)
+    // console.log("CT: ", ct)
+    let hex_enc_test = binascii.hexlify(ct)
+    // console.log(hex_enc_test, 'hex_enc_test')
+    let hex_key = binascii.hexlify(key)
+    // console.log(hex_key, 'hex_key')
+    let hex_iv = binascii.hexlify(iv)
+    // console.log(hex_iv, 'hex_iv')
+
+    const cipherParams = CryptoES.lib.CipherParams.create({
+        ciphertext: CryptoES.enc.Hex.parse(hex_enc_test),
+        key: key,
+        iv: iv
+    })
+    // console.log(cipherParams, 'cipherParams')
+    const decrypted = CryptoES.AES.decrypt(cipherParams, CryptoES.enc.Hex.parse(hex_key), { mode: CryptoES.mode.CBC, padding: CryptoES.pad.Pkcs7, iv: CryptoES.enc.Hex.parse(hex_iv) });
+    // console.log(decrypted, "decrypted")
+    var result2 = CryptoES.enc.Utf8.stringify(decrypted);
+    // console.log(result2, 'check result2X')
+
+    const decDataHandler = (data) => {
+        const arr = data.split('\n')
+        console.log(arr)
+        const email = arr[0]
+        const govermentIdentity = arr[1]
+        let tempArr = []
+        for (let index = 2; index < arr.length; index++) {
+            let vaccineRecord = arr[index].split(',')
+            const expiryDate = vaccineRecord[0]
+            const vaccineName = vaccineRecord[1]
+            const manufacturer = vaccineRecord[2]
+            if (vaccineName == undefined) {
+                tempArr = []
+            }
+            else {
+                tempArr.push({
+                    name: vaccineName,
+                    expiry: expiryDate
+                })
+            }
+        }
+        const finalData = {
+            email: email,
+            govermentIdentity: govermentIdentity,
+            vaccines: tempArr
+        }
+        console.log(finalData)
+        return finalData
+    }
+    const decryptedData = decDataHandler(result2)
+    // console.log(decryptedData, 'decryptedData')
     const monthLookup = (month) => {
         switch (month) {
             case "01":
@@ -47,11 +103,6 @@ function QRPass({ route, navigation }) {
                 break;
         }
     }
-
-    const mockData = [
-        { name: "COVID BOOSTER", expiry: '10 September 2021' },
-        { name: "COVID BOOSTER-2", expiry: '10 June 2021' }
-    ]
     const imagePicker = () => {
         switch (sortedData?.vaccinationStatus) {
             case "F":
@@ -81,7 +132,7 @@ function QRPass({ route, navigation }) {
     return (
         <View style={styles.container}>
             <ScrollView>
-                {/* HEADER SECTION */}
+
                 <View style={{ backgroundColor: '#efefef', height: 70, flexDirection: 'row', justifyContent: 'space-between', padding: 20 }}>
                     <View>
                         <Text style={{ color: '#aaaaaa', fontWeight: 'bold', marginBottom: 5 }}>NAME</Text>
@@ -92,7 +143,7 @@ function QRPass({ route, navigation }) {
                         <Text style={{ color: 'black', fontWeight: 'bold' }}>SARS-COV-2 Vaccine</Text>
                     </View>
                 </View>
-                {/* VACCINATION STATUS AND LOGO */}
+
                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
                     <View>
                         <Image style={styles.logo} source={imageSource} />
@@ -103,20 +154,28 @@ function QRPass({ route, navigation }) {
                             <Text style={{ color: 'black', fontWeight: 'bold', marginBottom: 5, fontSize: 25 }}>{vaccinationStatusLabel}</Text>
                         </View>
                         <View>
-                            <Text style={{ color: '#aaaaaa', fontWeight: 'bold', marginBottom: 5 }}>DIGITALLY SIGNED</Text>
-                            <Text style={{ fontWeight: 'bold' }}>Healthcare Entity Name</Text>
+                            <Text style={{ color: '#aaaaaa', fontWeight: 'bold', marginBottom: 5 }}>DIGITALLY SIGNED By</Text>
+                            <Text style={{ fontWeight: 'bold' }}>Mater Dei</Text>
                         </View>
                     </View>
                 </View>
-                {/* SHOWING THE VACCINATION RECORDS */}
+
                 <View style={{ color: 'black', width: '100%', alignItems: 'center', padding: 20 }}>
                     {
-                        mockData?.map((item, key) => {
+                        decryptedData?.vaccines?.map((item, key) => {
                             // TODO: CHANGE THE DATE FORMAT
+                            let expiryMonth = ''
+                            let convertedMonth = ''
+                            let fullDate = ''
+                            if (item.expiry) {
+                                expiryMonth = item.expiry.split('-')
+                                convertedMonth = monthLookup(expiryMonth[1])
+                                fullDate = `${expiryMonth[2]} / ${convertedMonth} / ${expiryMonth[0]}`
+                            }
                             return (
                                 <View key={key} style={{ flexDirection: 'row', marginTop: 5, marginBottom: 5, justifyContent: 'space-between', backgroundColor: '#f2f2f2', width: '100%', border: '1px solid #ccc', borderRadius: '4px' }}>
                                     <Text style={{ fontWeight: 'bold', padding: 10 }}>{item?.name}</Text>
-                                    <Text style={{ padding: 10 }}>{item?.expiry}</Text>
+                                    <Text style={{ padding: 10 }}>{fullDate}</Text>
                                 </View>
                             )
                         })
