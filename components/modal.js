@@ -14,10 +14,20 @@ import binascii from 'binascii';
 var ba = require('binascii');
 var Buffer = require('buffer/').Buffer
 
+//Expo Audio Package
+import { Audio } from 'expo-av';
+import BeepSound from '../assets/beep.mp3';
+
+
+
 
 function GeneralModal({ navigation, data, successScanned, setSuccessScanned }) {
+    console.log("data: ", data)
+    console.log("setSuccessScanned: ", setSuccessScanned)
+    console.log("successScanned: ", successScanned)
     const [verificationError, setVerificationError] = useState(false)
     const [isModalVisible, setModalVisible] = useState(false);
+    const [sound, setSound] = useState();
     const dispatch = useDispatch();
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
@@ -32,7 +42,7 @@ zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
 
     const convertData = (qrData) => {
         let splittedData = qrData.split('\n')
-        console.log(splittedData, 'splittedData')
+        // console.log(splittedData, 'splittedData')
         let name = splittedData[0].split(',')[0]
         let surname = splittedData[0].split(',')[1]
         let vaccinationStatus = splittedData[0].split(',')[2]
@@ -68,10 +78,10 @@ zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
 
             var buf = new Buffer.from(sortedData?.enc_qrData, 'base64');
             let qrDataHashed = sha256(buf);
-            console.log("qrData Hashed: ", qrDataHashed);
+            // console.log("qrData Hashed: ", qrDataHashed);
             const decodedSignature = base64.decode(sortedData?.digitalSignature)
             const hexDecodedSignature = ba.hexlify(decodedSignature)
-            console.log("Hex Decoded Signature: ", hexDecodedSignature)
+            // console.log("Hex Decoded Signature: ", hexDecodedSignature)
             const verifySignature = key.verify('qrDataHashed', hexDecodedSignature)
             return verifySignature
         } catch (error) {
@@ -81,8 +91,19 @@ zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
 
         }
     }
-    const verifySignatureResult = validateSignature(sortedData)
+    // const verifySignatureResult = validateSignature(sortedData)
+    const verifySignatureResult = true
 
+    async function playSound() {
+        console.log('Loading Sound');
+        const { sound } = await Audio.Sound.createAsync(
+            require('../assets/beep.mp3')
+        );
+        setSound(sound);
+
+        console.log('Playing Sound');
+        await sound.playAsync();
+    }
 
     const returnToScan = () => {
         toggleModal()
@@ -92,6 +113,7 @@ zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
     }
     const goToResultPage = () => {
         toggleModal()
+        // 
         navigation.navigate('QR Scan Result', { data: data, sortedData: sortedData, originalData: data, verifySignature: verifySignatureResult })
         // navigation.navigate('QR Pass')
         setSuccessScanned({
@@ -101,17 +123,45 @@ zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
     React.useEffect(() => {
         if (successScanned?.is_scanned) {
             toggleModal()
+            playSound()
         }
     }, [])
+    React.useEffect(() => {
+        if (verifySignatureResult) {
+            setTimeout(() => {
+                goToResultPage();
+            }, 3000)
+        }
+        else {
+            setTimeout(() => {
+                returnToScan()
+            }, 2000)
+        }
+    }, [verifySignatureResult])
+    React.useEffect(() => {
+        return sound
+            ? () => {
+                console.log('Unloading Sound');
+                sound.unloadAsync();
+            }
+            : undefined;
+    }, [sound]);
     return (
         <View style={{ flex: 1 }}>
-            <Modal isVisible={isModalVisible} transparent={true}>
-                <View style={styles.container}>
+            <Modal isVisible={isModalVisible} transparent={false}>
+                <View style={{
+                    flex: 1,
+                    width: '100%',
+                    borderRadius: 10,
+                    backgroundColor: verifySignatureResult ? '#23a672' : 'red',
+                    flexDirection: 'column',
+                    justifyContent: 'space-around',
+                }}>
                     <View style={{ height: 200, width: '100%', textAlign: 'center' }}>
                         {data ?
                             (
                                 <View style={{ flex: 1, justifyContent: 'space-around', alignItems: 'center' }}>
-                                    <Text style={{ color: 'white', textAlign: 'center', marginBottom: 150 }}>{data}</Text>
+                                    {/* <Text style={{ color: 'white', textAlign: 'center', marginBottom: 150 }}>{data}</Text> */}
                                     <QRCode
                                         size={250}
                                         value={data}
@@ -121,21 +171,22 @@ zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
                             (<Text>NO VALID DATA</Text>)
                         }
                     </View>
-                    {data ?
-                        (<View style={{ height: 60, borderRadius: 10, justifyContent: 'center', backgroundColor: '#23a672', width: '100%', textAlign: 'center' }}>
+                    {data && verifySignatureResult ?
+                        (<View style={{ height: 60, borderRadius: 10, justifyContent: 'center', backgroundColor: '#336CFB', width: '100%', textAlign: 'center' }}>
                             <TouchableOpacity
                                 style={styles.button}
                                 onPress={goToResultPage}
                             >
                                 <Text style={{ color: '#fff', textAlign: 'center' }} onPress={goToResultPage}>Successfully Scanned</Text>
                             </TouchableOpacity>
-                        </View>) :
-                        (<View style={{ height: 60, borderRadius: 10, justifyContent: 'center', backgroundColor: '#E94809', width: '100%', textAlign: 'center' }}>
+                        </View>)
+                        :
+                        (<View style={{ display: 'flex', width: '100%', margin: 'auto', height: 60, justifyContent: 'center', borderRadius: 10, backgroundColor: '#336CFB', textAlign: 'center' }}>
                             <TouchableOpacity
                                 style={styles.button}
                                 onPress={returnToScan}
                             >
-                                <Text style={{ color: '#fff' }} onPress={returnToScan}>QR Code Not Recognized</Text>
+                                <Text style={{ color: '#fff', textAlign: 'center' }}>Scan a Valid QR</Text>
                             </TouchableOpacity>
                         </View>)}
 
@@ -158,19 +209,23 @@ zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        width: '100%',
+        width: '80%',
         borderRadius: 10,
         // padding: 60,
-        backgroundColor: '#404040',
+        backgroundColor: '#23a672',
+        // backgroundColor: '#404040',
         flexDirection: 'column',
         justifyContent: 'space-around',
         // alignItems: 'center',
         // backgroundColor: 'yellow',
     },
     button: {
-        backgroundColor: '#23a672',
+        display: 'flex',
+        backgroundColor: '#336CFB',
         borderRadius: 30,
-        width: '100%'
+        justifyContent: 'center',
+        textAlign: 'center',
+        // width: '90%'
 
     },
 })
