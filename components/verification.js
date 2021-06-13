@@ -13,7 +13,7 @@ function Verification({ route, navigation }) {
     console.log(sortedData, 'data from verification')
     const [startCamera, setStartCamera] = React.useState(true);
     const [capturedImage, setCapturedImage] = React.useState(null);
-    const [type, setType] = React.useState(Camera.Constants.Type.front);
+    const [type, setType] = React.useState(Camera.Constants.Type.back);
     const isVerificationSuccessfull = useSelector(state => state.main?.verificationResponse?.success)
     console.log(isVerificationSuccessfull, 'isVerificationSuccessfullisVerificationSuccessfull')
     const dekKey = useSelector(state => state.main?.verificationResponse?.dek_key)
