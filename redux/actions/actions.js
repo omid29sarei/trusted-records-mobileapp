@@ -33,3 +33,14 @@ export const verification = (imageUri, testData, encData, iv) => dispatch => {
             })
         })
 }
+
+// export const signatureVerification = ()=>dispatch=>{
+//     const SIGN_VERIFICATION_KEY='-----BEGIN PUBLIC KEY-----
+//     MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEOqt1Bl1y3zpRlQN92Kx1CC1Qus0Q
+//     jwk3Dod3X8pmI27Ei53wbUles04T1/EtUj+WZ3b/Lc7Aiu4JewB0TT1NOw==
+//     -----END PUBLIC KEY-----'
+//     return dispatch({
+//         type: SIGNATURE_VERIFICATION,
+//         payload: SIGN_VERIFICATION_KEY
+//     })
+// }

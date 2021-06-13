@@ -49,14 +49,6 @@ function QRReader({ route, navigation }) {
     useEffect(() => {
     }, [successScanned?.is_scanned])
 
-    // useEffect(() => {
-    //     if (savedQRData) {
-    //         navigation.navigate('QR Scan Result')
-    //     }
-    // }, [savedQRData])
-
-
-
     const handleBarCodeScanned = (scanningResult) => {
         if (!scanned) {
             const { type, data, bounds: { origin } = {} } = scanningResult;

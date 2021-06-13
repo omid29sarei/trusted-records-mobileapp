@@ -17,30 +17,30 @@ function QRPass({ route, navigation }) {
     //     navigation.navigate('')
     // }
     // console.log("KEY: ", dekKey)
-
+    console.log(sortedData, 'sortedData')
     const iv = base64.decode(sortedData?.iv)
-    // console.log("IV: ", iv)
+    console.log("IV: ", iv)
     const key = base64.decode(dekKey)
-    // console.log("KEY: ", key)
+    console.log("KEY: ", key)
     const ct = base64.decode(sortedData?.enc_qrData)
-    // console.log("CT: ", ct)
+    console.log("CT: ", ct)
     let hex_enc_test = binascii.hexlify(ct)
-    // console.log(hex_enc_test, 'hex_enc_test')
+    console.log(hex_enc_test, 'hex_enc_test')
     let hex_key = binascii.hexlify(key)
-    // console.log(hex_key, 'hex_key')
+    console.log(hex_key, 'hex_key')
     let hex_iv = binascii.hexlify(iv)
-    // console.log(hex_iv, 'hex_iv')
+    console.log(hex_iv, 'hex_iv')
 
     const cipherParams = CryptoES.lib.CipherParams.create({
         ciphertext: CryptoES.enc.Hex.parse(hex_enc_test),
         key: key,
         iv: iv
     })
-    // console.log(cipherParams, 'cipherParams')
+    console.log(cipherParams, 'cipherParams')
     const decrypted = CryptoES.AES.decrypt(cipherParams, CryptoES.enc.Hex.parse(hex_key), { mode: CryptoES.mode.CBC, padding: CryptoES.pad.Pkcs7, iv: CryptoES.enc.Hex.parse(hex_iv) });
-    // console.log(decrypted, "decrypted")
+    console.log(decrypted, "decrypted")
     var result2 = CryptoES.enc.Utf8.stringify(decrypted);
-    // console.log(result2, 'check result2X')
+    console.log(result2, 'check result2X')
 
     const decDataHandler = (data) => {
         const arr = data.split('\n')
@@ -72,7 +72,7 @@ function QRPass({ route, navigation }) {
         return finalData
     }
     const decryptedData = decDataHandler(result2)
-    // console.log(decryptedData, 'decryptedData')
+    console.log(decryptedData, 'decryptedData')
     const monthLookup = (month) => {
         switch (month) {
             case "01":
@@ -173,7 +173,7 @@ function QRPass({ route, navigation }) {
                                 fullDate = `${expiryMonth[2]} / ${convertedMonth} / ${expiryMonth[0]}`
                             }
                             return (
-                                <View key={key} style={{ flexDirection: 'row', marginTop: 5, marginBottom: 5, justifyContent: 'space-between', backgroundColor: '#f2f2f2', width: '100%', border: '1px solid #ccc', borderRadius: '4px' }}>
+                                <View key={key} style={{ flexDirection: 'row', marginTop: 5, marginBottom: 5, justifyContent: 'space-between', backgroundColor: '#f2f2f2', width: '100%', border: '1px solid #ccc', borderRadius: 4 }}>
                                     <Text style={{ fontWeight: 'bold', padding: 10 }}>{item?.name}</Text>
                                     <Text style={{ padding: 10 }}>{fullDate}</Text>
                                 </View>

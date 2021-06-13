@@ -2,48 +2,67 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
 import FullStatusImg from '../assets/full-vaccinated-logo.png';
 import digitallySigned from '../assets/signed.gif';
+import digitallySignedFailed from '../assets/signFailed.png';
 import QRBG from '../assets/BG.png';
 import QRCode from 'react-native-qrcode-svg';
+import { verification } from '../redux/actions/actions';
 
 function QRScanResult({ route, navigation }) {
-    const { data, sortedData, originalData } = route.params;
+    const { data, sortedData, originalData, verifySignature } = route.params;
+    console.log("verifySignature from QR Scan Result: ", verifySignature)
     console.log(sortedData, 'sortedData from qr result')
     const goToTakeSelfiePage = () => {
-        navigation.navigate('Take Selfie Info', { data: data, sortedData: sortedData, originalData: originalData })
+        if (verifySignature) {
+            navigation.navigate('Take Selfie Info', { data: data, sortedData: sortedData, originalData: originalData })
+        }
+        else {
+            navigation.navigate('QR Reader')
+        }
     }
 
     return (
         <View style={styles.container}>
             <ScrollView>
-                <View style={{ backgroundColor: '#efefef', height: 70, flexDirection: 'row', justifyContent: 'space-between', padding: 20 }}>
-                    <View>
-                        <Text style={{ color: '#aaaaaa', fontWeight: 'bold', marginBottom: 5 }}>NAME</Text>
-                        <Text style={{ color: 'black', fontWeight: 'bold' }}>{sortedData?.name}{' '}{sortedData?.surname}</Text>
-                    </View>
-                    <View>
-                        <Text style={{ color: '#aaaaaa', fontWeight: 'bold', marginBottom: 5 }}>VACCINATION RECORD</Text>
-                        <Text style={{ color: 'black', fontWeight: 'bold' }}>SARS-COV-2 Vaccine</Text>
-                    </View>
-                </View>
+                {verifySignature ?
+                    (
+                        <View style={{ backgroundColor: '#efefef', height: 70, flexDirection: 'row', justifyContent: 'space-between', padding: 20 }}>
+                            <View>
+                                <Text style={{ color: '#aaaaaa', fontWeight: 'bold', marginBottom: 5 }}>NAME</Text>
+                                <Text style={{ color: 'black', fontWeight: 'bold' }}>{sortedData?.name}{' '}{sortedData?.surname}</Text>
+                            </View>
+                            <View>
+                                <Text style={{ color: '#aaaaaa', fontWeight: 'bold', marginBottom: 5 }}>VACCINATION RECORD</Text>
+                                <Text style={{ color: 'black', fontWeight: 'bold' }}>SARS-COV-2 Vaccine</Text>
+                            </View>
+                        </View>
+                    ) :
+                    null
+                }
+
                 <View style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 25 }}>
-                    <Image source={digitallySigned} />
+                    <Image source={verifySignature ? digitallySigned : digitallySignedFailed} />
                     <Text style={{ color: '#aaaaaa', fontWeight: 'bold', marginBottom: 5 }}>STATUS</Text>
-                    <Text style={{ color: 'black', fontWeight: 'bold', marginBottom: 15, fontSize: 25 }}>Digitally Signed</Text>
+                    <Text style={{ color: 'black', fontWeight: 'bold', marginBottom: 15, fontSize: 25 }}>{verifySignature ? "Digitally Signed" : "Verification Failed"} </Text>
                     <TouchableOpacity
                         style={styles.button}
                         onPress={goToTakeSelfiePage}
                     >
-                        <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 20, padding: 15, textAlign: 'center' }}>Decrypt Expanded Record</Text>
+                        <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 20, padding: 15, textAlign: 'center' }}>{verifySignature ? "Decrypt Expanded Record" : "Scan a Valid QR Code"}</Text>
                     </TouchableOpacity>
                 </View>
                 <View>
                     <ImageBackground source={QRBG} style={styles.image}>
                         <View style={styles.qr}>
-                            <QRCode
-                                size={250}
-                                value={data}
-                                quietZone={10}
-                            />
+                            {verifySignature ?
+                                (
+                                    <QRCode
+                                        size={250}
+                                        value={data}
+                                        quietZone={10}
+                                    />
+                                ) : null
+                            }
+
                         </View>
                     </ImageBackground>
                 </View>

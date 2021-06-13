@@ -5,6 +5,8 @@ import { Camera } from 'expo-camera';
 import { useSelector, useDispatch } from 'react-redux';
 import { verification } from '../redux/actions/actions';
 import Spinner from 'react-native-loading-spinner-overlay';
+// import * as ec from 'react-native-ecc'
+// import { Buffer } from 'buffer'
 
 function Verification({ route, navigation }) {
     const { data, sortedData, originalData } = route.params;
@@ -16,6 +18,8 @@ function Verification({ route, navigation }) {
     console.log(isVerificationSuccessfull, 'isVerificationSuccessfullisVerificationSuccessfull')
     const dekKey = useSelector(state => state.main?.verificationResponse?.dek_key)
     const failedVerification = useSelector(state => state.main?.verificationFailedResponse)
+
+
     let cameraText = "Take Photo";
     const dispatch = useDispatch();
     const goToVerification = () => {
@@ -27,15 +31,9 @@ function Verification({ route, navigation }) {
         const photo = await camera.takePictureAsync({
             base64: true
         })
-        // console.log(photo?.uri)
-        // console.log(photo, 'PHOTO OBJECT')
-        // navigation.navigate('QR Pass', { data: data, sortedData: sortedData, originalData: originalData }
         dispatch(verification(photo?.base64, sortedData?.enc_dek, sortedData?.enc_qrData, sortedData?.iv))
         setCapturedImage(photo?.base64)
 
-    }
-    const byPass = () => {
-        navigation.navigate('QR Pass', { data: data, sortedData: sortedData, originalData: originalData, dekKey: dekKey })
     }
     React.useEffect(() => {
         (async () => {

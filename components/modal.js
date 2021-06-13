@@ -1,16 +1,34 @@
 import React, { useState } from 'react';
-import { Button, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Button, Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Modal from 'react-native-modal';
 import { useSelector, useDispatch } from 'react-redux';
 import QRCode from 'react-native-qrcode-svg';
+import CryptoES from 'crypto-es';
+var KeyEncoder = require('react-native-key-encoder'),
+    keyEncoder = new KeyEncoder('secp256k1')
+var base64 = require('base-64');
+var sha256 = require('sha256')
+var EC = require('elliptic').ec;
+var ec = new EC('secp256k1');
+import binascii from 'binascii';
+var ba = require('binascii');
+var Buffer = require('buffer/').Buffer
 
 
 function GeneralModal({ navigation, data, successScanned, setSuccessScanned }) {
+    const [verificationError, setVerificationError] = useState(false)
     const [isModalVisible, setModalVisible] = useState(false);
     const dispatch = useDispatch();
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
+    //PUBLIC KEY VARIABLE AND CONVERTION TO HEX REPRESENTATION
+    let pub_pem = `-----BEGIN PUBLIC KEY-----
+MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEj56hamXUE8ZaHzuLI4bAMR+epHK0+2x9
+zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
+-----END PUBLIC KEY-----`;
+    var public_key_hex = keyEncoder.encodePublic(pub_pem, 'pem', 'raw')
+    var key = ec.keyFromPublic(public_key_hex, 'hex');
 
     const convertData = (qrData) => {
         let splittedData = qrData.split('\n')
@@ -35,6 +53,37 @@ function GeneralModal({ navigation, data, successScanned, setSuccessScanned }) {
         return sortedData
     }
     let sortedData = convertData(data)
+    // console.log('sortedData: ', sortedData)
+
+
+    const validateSignature = (sortedData) => {
+        try {
+            // THIS IS ONLY FOR TESTING THE VERIFICATION FAIL FLOW
+            // const failedQRData = "HW424ABCfc1zXscl/ae8ep7Xh9uo46gwyqwNjuPc5BrHfFGyWylEHokIbitGjDmLUYizjxkCZey7J3hj"
+            // const failedSignature = "aaaCIHij4xVkjYk2WIa6+oaveFbCUEMq2pJEhicSw2IehiKoAiEAjNjYYbEuMUkkqjZWHQXyTkh11rpu/N0/ZopS4dG/qJ8="
+            // var buf = new Buffer.from(failedQRData, 'base64');
+            // let qrDataHashed = sha256(buf);
+            // const decodedSignature = base64.decode(failedSignature)
+            // const hexDecodedSignature = ba.hexlify(decodedSignature)
+
+            var buf = new Buffer.from(sortedData?.enc_qrData, 'base64');
+            let qrDataHashed = sha256(buf);
+            console.log("qrData Hashed: ", qrDataHashed);
+            const decodedSignature = base64.decode(sortedData?.digitalSignature)
+            const hexDecodedSignature = ba.hexlify(decodedSignature)
+            console.log("Hex Decoded Signature: ", hexDecodedSignature)
+            const verifySignature = key.verify('qrDataHashed', hexDecodedSignature)
+            return verifySignature
+        } catch (error) {
+            console.log(error, 'ERROR')
+            return false
+
+
+        }
+    }
+    const verifySignatureResult = validateSignature(sortedData)
+
+
     const returnToScan = () => {
         toggleModal()
         setSuccessScanned({
@@ -43,7 +92,7 @@ function GeneralModal({ navigation, data, successScanned, setSuccessScanned }) {
     }
     const goToResultPage = () => {
         toggleModal()
-        navigation.navigate('QR Scan Result', { data: data, sortedData: sortedData, originalData: data })
+        navigation.navigate('QR Scan Result', { data: data, sortedData: sortedData, originalData: data, verifySignature: verifySignatureResult })
         // navigation.navigate('QR Pass')
         setSuccessScanned({
             is_scanned: false
@@ -54,7 +103,6 @@ function GeneralModal({ navigation, data, successScanned, setSuccessScanned }) {
             toggleModal()
         }
     }, [])
-
     return (
         <View style={{ flex: 1 }}>
             <Modal isVisible={isModalVisible} transparent={true}>
