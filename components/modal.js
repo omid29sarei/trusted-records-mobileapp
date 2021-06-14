@@ -91,8 +91,8 @@ zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
 
         }
     }
-    // const verifySignatureResult = validateSignature(sortedData)
-    const verifySignatureResult = true
+    const verifySignatureResult = validateSignature(sortedData)
+    // const verifySignatureResult = true
 
     async function playSound() {
         console.log('Loading Sound');
