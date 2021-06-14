@@ -41,9 +41,14 @@ function QRReader({ route, navigation }) {
     const [successScanned, setSuccessScanned] = useState({ is_scanned: false, data: {} });
     useEffect(() => {
         (async () => {
-            const { status } = await BarCodeScanner.requestPermissionsAsync();
-            console.log(status, 'status of the permision')
-            setHasPermission(status === 'granted');
+            try {
+                const { status } = await BarCodeScanner.requestPermissionsAsync();
+                console.log(status, 'status of the permision')
+                setHasPermission(status === 'granted');
+            }
+            catch (e) {
+                console.log(e)
+            }
         })();
     }, []);
     useEffect(() => {

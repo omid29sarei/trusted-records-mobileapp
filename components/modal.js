@@ -72,7 +72,7 @@ zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
             const decodedSignature = base64.decode(sortedData?.digitalSignature)
             const hexDecodedSignature = ba.hexlify(decodedSignature)
             console.log("Hex Decoded Signature: ", hexDecodedSignature)
-            const verifySignature = key.verify('qrDataHashed', hexDecodedSignature)
+            const verifySignature = key.verify(qrDataHashed, hexDecodedSignature)
             return verifySignature
         } catch (error) {
             console.log(error, 'ERROR')
@@ -138,17 +138,6 @@ zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
                                 <Text style={{ color: '#fff' }} onPress={returnToScan}>QR Code Not Recognized</Text>
                             </TouchableOpacity>
                         </View>)}
-
-                    {/* <Button
-                        title="increase"
-                        onPress={() => dispatch(increment_counter())}
-                    />
-                    <Text>{counter}</Text>
-                    <Button
-                        title="decrease"
-                        onPress={() => dispatch(decrement_counter())}
-                    /> */}
-                    {/* <Button title="Continue" onPress={returnToScan} /> */}
                 </View>
             </Modal>
         </View >
