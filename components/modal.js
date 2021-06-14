@@ -82,7 +82,7 @@ zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
             const decodedSignature = base64.decode(sortedData?.digitalSignature)
             const hexDecodedSignature = ba.hexlify(decodedSignature)
             // console.log("Hex Decoded Signature: ", hexDecodedSignature)
-            const verifySignature = key.verify('qrDataHashed', hexDecodedSignature)
+            const verifySignature = key.verify(qrDataHashed, hexDecodedSignature)
             return verifySignature
         } catch (error) {
             console.log(error, 'ERROR')
