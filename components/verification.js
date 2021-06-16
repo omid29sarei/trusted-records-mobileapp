@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ImageBackground, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, ImageBackground, TouchableOpacity, Dimensions, Alert } from 'react-native';
 import Overlay from '../assets/selfie-overlay.png';
 import { Camera } from 'expo-camera';
 import { useSelector, useDispatch } from 'react-redux';
@@ -9,6 +9,12 @@ import Spinner from 'react-native-loading-spinner-overlay';
 // import { Buffer } from 'buffer'
 
 function Verification({ route, navigation }) {
+    const finderWidth = 280;
+    const finderHeight = 230;
+    const width = Dimensions.get('window').width;
+    const height = Dimensions.get('window').height;
+    const viewMinX = (width - finderWidth) / 2;
+    const viewMinY = (height - finderHeight) / 2;
     const { data, sortedData, originalData } = route.params;
     console.log(sortedData, 'data from verification')
     const [startCamera, setStartCamera] = React.useState(true);
@@ -77,7 +83,7 @@ function Verification({ route, navigation }) {
                     }} resizeMethod={'auto'} source={Overlay} style={styles.image}>
                         {startCamera ? (
                             <Camera
-                                style={{ zIndex: -1, height: 700, width: "100%" }}
+                                style={{ zIndex: -1, height: '100%', width: "100%" }}
                                 ref={(r) => {
                                     camera = r
                                 }}
@@ -102,7 +108,8 @@ function Verification({ route, navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: "column"
+        flexDirection: "column",
+        justifyContent: 'center',
     },
     image: {
         flex: 1,
