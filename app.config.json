@@ -3,7 +3,7 @@
     "name": "trusted-records",
     "icon": "./assets/TSLogoOnly.png",
     "version": "1.0.0",
-    "slug": "your-app-slug",
+    "slug": "Trusted Records",
     "orientation": "portrait",
     "ios": {
       "bundleIdentifier": "com.truststamp.hague",

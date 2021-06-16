@@ -53,7 +53,9 @@ function QRReader({ route, navigation }) {
     }, []);
     useEffect(() => {
     }, [successScanned?.is_scanned])
+    useEffect(() => {
 
+    }, [scanned])
     const handleBarCodeScanned = (scanningResult) => {
         if (!scanned) {
             const { type, data, bounds: { origin } = {} } = scanningResult;
@@ -92,9 +94,9 @@ function QRReader({ route, navigation }) {
                 (
                     <BarCodeScanner onBarCodeScanned={handleBarCodeScanned}
                         style={styles.QRContainer}>
+                        {scanned && <Button style={styles.button} title="Scan Again" onPress={() => setScanned(false)} />}
                         <BarcodeMask edgeColor="#62B1F6" showAnimatedLine edgeRadius={10} outerMaskOpacity={0.7} />
                         <Text style={styles.text} >Vaccination Records</Text>
-                        {scanned && <Button style={styles.button} title="Scan Again" onPress={() => setScanned(false)} />}
                         {console.log(successScanned)}
                     </BarCodeScanner>
                 )
