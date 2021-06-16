@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Button, Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { Button, Text, View, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Modal from 'react-native-modal';
 import { useSelector, useDispatch } from 'react-redux';
 import QRCode from 'react-native-qrcode-svg';
+import WrongIcon from '../assets/wrong.png';
+import CorrectIcon from '../assets/correct.png';
 import CryptoES from 'crypto-es';
 var KeyEncoder = require('react-native-key-encoder'),
     keyEncoder = new KeyEncoder('secp256k1')
@@ -17,6 +19,7 @@ var Buffer = require('buffer/').Buffer
 //Expo Audio Package
 import { Audio } from 'expo-av';
 import BeepSound from '../assets/beep.mp3';
+import WrongBeep from '../assets/wrong.mp3';
 
 
 
@@ -97,7 +100,8 @@ zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
     async function playSound() {
         console.log('Loading Sound');
         const { sound } = await Audio.Sound.createAsync(
-            require('../assets/beep.mp3')
+            // require('../assets/beep.mp3')
+            verifySignatureResult ? BeepSound : WrongBeep
         );
         setSound(sound);
 
@@ -153,7 +157,7 @@ zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
                     flex: 1,
                     width: '100%',
                     borderRadius: 10,
-                    backgroundColor: verifySignatureResult ? '#23a672' : 'red',
+                    backgroundColor: verifySignatureResult ? '#03c66e' : '#ec5757',
                     flexDirection: 'column',
                     justifyContent: 'space-around',
                 }}>
@@ -161,17 +165,18 @@ zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
                         {data ?
                             (
                                 <View style={{ flex: 1, justifyContent: 'space-around', alignItems: 'center' }}>
+                                    <Image source={verifySignatureResult ? CorrectIcon : WrongIcon} />
                                     {/* <Text style={{ color: 'white', textAlign: 'center', marginBottom: 150 }}>{data}</Text> */}
-                                    <QRCode
+                                    {/* <QRCode
                                         size={250}
                                         value={data}
-                                    />
+                                    /> */}
                                 </View>)
                             :
                             (<Text>NO VALID DATA</Text>)
                         }
                     </View>
-                    {data && verifySignatureResult ?
+                    {/* {data && verifySignatureResult ?
                         (<View style={{ height: 60, borderRadius: 10, justifyContent: 'center', backgroundColor: '#336CFB', width: '100%', textAlign: 'center' }}>
                             <TouchableOpacity
                                 style={styles.button}
@@ -188,7 +193,7 @@ zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
                             >
                                 <Text style={{ color: '#fff', textAlign: 'center' }}>Scan a Valid QR</Text>
                             </TouchableOpacity>
-                        </View>)}
+                        </View>)} */}
 
                     {/* <Button
                         title="increase"
