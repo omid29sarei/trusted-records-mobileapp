@@ -37,8 +37,8 @@ function GeneralModal({ navigation, data, successScanned, setSuccessScanned }) {
     };
     //PUBLIC KEY VARIABLE AND CONVERTION TO HEX REPRESENTATION
     let pub_pem = `-----BEGIN PUBLIC KEY-----
-MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEj56hamXUE8ZaHzuLI4bAMR+epHK0+2x9
-zT3sHweW1LsFdosBwAylkyvIOiuPKE5ol0DUXt//RJiCUcFDZzFFGA==
+MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEtSWYdxOr4YflUnApzpn1YaejO8pzvYqj
+SiThKjVVDruFQxd9GG6H3Q4xYEmdiaynbMRQs18/H4qcaZF6DIOJkw==
 -----END PUBLIC KEY-----`;
     var public_key_hex = keyEncoder.encodePublic(pub_pem, 'pem', 'raw')
     var key = ec.keyFromPublic(public_key_hex, 'hex');
