@@ -15,15 +15,17 @@ function Verification({ route, navigation }) {
     const height = Dimensions.get('window').height;
     const viewMinX = (width - finderWidth) / 2;
     const viewMinY = (height - finderHeight) / 2;
-    const { data, sortedData, originalData } = route.params;
-    console.log(sortedData, 'data from verification')
+    const { originalData } = route.params;
+    console.log(originalData,"originalData")
+    // console.log(sortedData, 'data from verification')
     const [startCamera, setStartCamera] = React.useState(true);
     const [capturedImage, setCapturedImage] = React.useState(null);
     const [type, setType] = React.useState(Camera.Constants.Type.front);
-    const isVerificationSuccessfull = useSelector(state => state.main?.verificationResponse?.success)
+    const isVerificationSuccessfull = false
+    // useSelector(state => state.main?.verificationResponse?.success)
     console.log(isVerificationSuccessfull, 'isVerificationSuccessfullisVerificationSuccessfull')
     const dekKey = useSelector(state => state.main?.verificationResponse?.dek_key)
-    const failedVerification = useSelector(state => state.main?.verificationFailedResponse)
+    // const failedVerification = useSelector(state => state.main?.verificationFailedResponse)
 
 
     let cameraText = "Take Photo";
@@ -37,7 +39,7 @@ function Verification({ route, navigation }) {
         const photo = await camera.takePictureAsync({
             base64: true
         })
-        dispatch(verification(photo?.base64, sortedData?.enc_dek, sortedData?.enc_qrData, sortedData?.iv))
+        // dispatch(verification(photo?.base64, originalData))
         setCapturedImage(photo?.base64)
 
     }
@@ -52,18 +54,17 @@ function Verification({ route, navigation }) {
         })();
     }, []);
     React.useEffect(() => {
-        if (dekKey?.length > 0) {
-            setCapturedImage(null)
-            navigation.navigate('QR Pass', { data: data, sortedData: sortedData, originalData: originalData, dekKey: dekKey })
-        }
+
         if (isVerificationSuccessfull == false) {
-            setCapturedImage(null)
-            cameraText = "ReTake Photo"
+            navigation.navigate('Result Screen',{isVerificationSuccessfull})
         }
-    }, [dekKey, failedVerification, isVerificationSuccessfull, cameraText])
+        if (isVerificationSuccessfull){
+            navigation.navigate('Result Screen',{isVerificationSuccessfull})
+        }
+    }, [isVerificationSuccessfull, cameraText])
     return (
         <View style={styles.container}>
-            {capturedImage ?
+            {isVerificationSuccessfull ?
                 (
                     <Spinner
                         visible={capturedImage ? true : false}

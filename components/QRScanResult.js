@@ -8,9 +8,9 @@ import QRCode from 'react-native-qrcode-svg';
 import { verification } from '../redux/actions/actions';
 
 function QRScanResult({ route, navigation }) {
-    const { data, sortedData, originalData, verifySignature } = route.params;
+    const {originalData } = route.params;
     console.log("verifySignature from QR Scan Result: ", verifySignature)
-    console.log(sortedData, 'sortedData from qr result')
+    // console.log(sortedData, 'sortedData from qr result')
     const goToTakeSelfiePage = () => {
         if (verifySignature) {
             navigation.navigate('Take Selfie Info', { data: data, sortedData: sortedData, originalData: originalData })

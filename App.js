@@ -12,7 +12,8 @@ import TSLogo from './assets/TSLogo.png';
 import HeaderLogo from './components/shared/headerLogo';
 import TakeSelfieInfo from './components/takeSelfieInfo';
 import Verification from './components/verification';
-import QRPass from './components/QRPass';
+import ResultScreen from './components/resultScreen';
+// import QRPass from './components/QRPass';
 
 ///
 import { createStore, applyMiddleware } from 'redux';
@@ -49,7 +50,7 @@ export default function App() {
           <Stack.Screen name="Take Selfie Info" component={TakeSelfieInfo} />
           <Stack.Screen name="QR Scan Result" component={QRScanResult} />
           <Stack.Screen name="Verification" component={Verification} />
-          <Stack.Screen name="QR Pass" component={QRPass} />
+          <Stack.Screen name="Result Screen" component={ResultScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

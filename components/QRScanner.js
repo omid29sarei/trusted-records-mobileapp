@@ -9,26 +9,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 function QRReader({ route, navigation }) {
-    // const storeData = async (value) => {
-    //     try {
-    //         const jsonValue = JSON.stringify(value)
-    //         await AsyncStorage.setItem('qrData', jsonValue)
-    //     } catch (e) {
-    //         // saving error
-    //         console.log(e, 'Error while saving data')
-    //     }
-    // }
-
-    // const getData = async () => {
-    //     try {
-    //         const jsonValue = await AsyncStorage.getItem('qrData')
-    //         return jsonValue != null ? JSON.parse(jsonValue) : null;
-    //     } catch (e) {
-    //         // error reading value
-    //     }
-    // }
-    // let savedQRData = getData()
-    // console.log(savedQRData, 'check load function')
     const finderWidth = 280;
     const finderHeight = 230;
     const width = Dimensions.get('window').width;
@@ -72,6 +52,7 @@ function QRReader({ route, navigation }) {
                     is_scanned: true,
                     data: data
                 })
+                navigation.navigate('Take Selfie Info', { originalData: data})
             }
         }
     };
@@ -87,20 +68,13 @@ function QRReader({ route, navigation }) {
 
     return (
         <View style={styles.container}>
-            {successScanned?.is_scanned ?
-                (
-                    <GeneralModal navigation={navigation} data={successScanned?.data} successScanned={successScanned} setSuccessScanned={setSuccessScanned} />
-                ) :
-                (
-                    <BarCodeScanner onBarCodeScanned={handleBarCodeScanned}
-                        style={styles.QRContainer}>
-                        {scanned && <Button style={styles.button} title="Scan Again" onPress={() => setScanned(false)} />}
-                        <BarcodeMask edgeColor="#62B1F6" showAnimatedLine edgeRadius={10} outerMaskOpacity={0.7} />
-                        <Text style={styles.text} >Vaccination Records</Text>
-                        {console.log(successScanned)}
-                    </BarCodeScanner>
-                )
-            }
+            <BarCodeScanner onBarCodeScanned={handleBarCodeScanned}
+                style={styles.QRContainer}>
+                {scanned && <Button style={styles.button} title="Scan Again" onPress={() => setScanned(false)} />}
+                <BarcodeMask edgeColor="#62B1F6" showAnimatedLine edgeRadius={10} outerMaskOpacity={0.7} />
+                <Text style={styles.text} >Scan Your Ticket</Text>
+                {console.log(successScanned)}
+            </BarCodeScanner>
         </View>
     )
 }

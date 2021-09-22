@@ -4,7 +4,7 @@ import axios from "axios";
 
 const BACKEND_URL = 'http://trustedrec.crabdance.com'
 
-export const verification = (imageUri, testData, encData, iv) => dispatch => {
+export const verification = (imageUri,it2) => dispatch => {
 
     let axiosConfig = {
         headers: {
@@ -13,10 +13,9 @@ export const verification = (imageUri, testData, encData, iv) => dispatch => {
     }
     const data = {
         "image": imageUri,
-        "enc_dek": testData,
-        "enc_qr": encData,
-        "iv": iv
+        "it2":it2
     }
+    console.log(data,"VerificationData")
     axios.post(`${BACKEND_URL}/in/decode/`, data, axiosConfig)
         .then(response => {
             console.log(response.data, 'CHECKING THE RESPONSE')
@@ -26,7 +25,20 @@ export const verification = (imageUri, testData, encData, iv) => dispatch => {
             })
         })
         .catch(error => {
-            console.log(error)
+            console.log(error)  
+            if (error.response) {
+                // Request made and server responded
+                console.log(error.response.data);
+                console.log(error.response.status);
+                // console.log(error.response.headers);
+              } else if (error.request) {
+                // The request was made but no response was received
+                console.log(error.request);
+              } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log('Error', error.message);
+              }
+
             return dispatch({
                 type: VERIFICATION_FAILED,
                 payload: error.data
@@ -34,13 +46,3 @@ export const verification = (imageUri, testData, encData, iv) => dispatch => {
         })
 }
 
-// export const signatureVerification = ()=>dispatch=>{
-//     const SIGN_VERIFICATION_KEY='-----BEGIN PUBLIC KEY-----
-//     MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEOqt1Bl1y3zpRlQN92Kx1CC1Qus0Q
-//     jwk3Dod3X8pmI27Ei53wbUles04T1/EtUj+WZ3b/Lc7Aiu4JewB0TT1NOw==
-//     -----END PUBLIC KEY-----'
-//     return dispatch({
-//         type: SIGNATURE_VERIFICATION,
-//         payload: SIGN_VERIFICATION_KEY
-//     })
-// }
