@@ -5,18 +5,29 @@ import Avatar from '../assets/avatar.png';
 import PassImage from '../assets/pass.png';
 import FailImage from '../assets/fail.png';
 import QRCode from 'react-native-qrcode-svg';
+import { useDispatch } from 'react-redux';
+import { resetStore } from '../redux/actions/actions';
 
 function ResultScreen({ route, navigation }) {
-    const { isVerificationSuccessfull } = route.params;
-    const goToHome = () => {
-        navigation.navigate('QR Reader')
-    }
+    const { isVerificationSuccessfull,verificationFailedResponse,isVerificationSuccessfull_api_response } = route.params;
+    console.log(verificationFailedResponse,'verificationFailedResponse from result')
+    console.log(isVerificationSuccessfull,'isVerificationSuccessfull from result')
+    const dispatch = useDispatch();
     return (
         <View style={styles.container}>
             <ScrollView>
-                <View>
-                    <Text style={{ paddingTop: 50, paddingLeft: 50, paddingRight: 50, paddingBottom: 50, textAlign: 'center', fontWeight: 'bold', fontSize: 25 }}></Text>
-                </View>
+            { !isVerificationSuccessfull ? 
+                (<View>
+                    <Text style={{ color:"red",paddingTop: 50, paddingLeft: 50, paddingRight: 50, paddingBottom: 50,textAlign: 'center', fontWeight: 'bold', fontSize: 20 }}>{isVerificationSuccessfull_api_response}</Text>
+                </View>):null
+            }
+            {verificationFailedResponse?.message?
+                (<View>
+                    <Text style={{ paddingTop: 50, paddingLeft: 50, paddingRight: 50, paddingBottom: 50, textAlign: 'center', fontWeight: 'bold', fontSize: 25 }}>{verificationFailedResponse?.message}</Text>
+                </View>):null
+            }
+                
+                
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                     <View>
                         <Image style={{ width: 300, height: 300, resizeMode: 'cover', borderRadius: 20 }} source={isVerificationSuccessfull? PassImage:FailImage} />
@@ -25,9 +36,20 @@ function ResultScreen({ route, navigation }) {
                     <Text style={{ color: 'black', marginBottom: 45, textAlign: 'center', paddingLeft: 50, paddingRight: 50 }}>The provided identity has been matched with the current user</Text>
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={goToHome}
+                        onPress={()=>{
+                            if(isVerificationSuccessfull_api_response){
+                                navigation.navigate("Verification")
+                            }
+                            // navigation.popToTop()
+                            navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'QR Reader' }],
+                              })
+                            dispatch(resetStore())
+                            
+                        }}
                     >
-                        <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 20, padding: 15, textAlign: 'center' }}>Scan New Ticket</Text>
+                        <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 20, padding: 15, textAlign: 'center' }}>{isVerificationSuccessfull_api_response? "Take Selfie":"Scan New Ticket"}</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>

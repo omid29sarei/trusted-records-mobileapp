@@ -7,7 +7,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { Provider } from "react-redux";
 //Custom Components
 import QRReader from './components/QRScanner';
-import QRScanResult from './components/QRScanResult';
 import TSLogo from './assets/TSLogo.png';
 import HeaderLogo from './components/shared/headerLogo';
 import TakeSelfieInfo from './components/takeSelfieInfo';
@@ -40,15 +39,16 @@ export default function App() {
       <HeaderLogo imageSrc={TSLogo} />
     ),
     headerTitleAlign: "center",
+    gestureEnabled: true,
+    headerBackTitleVisible: false,
   }
 
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="QR Reader" screenOptions={defaultOptions}>
+        <Stack.Navigator initialRouteName="QR Reader" screenOptions={defaultOptions} headerMode='float'>
           <Stack.Screen name="QR Reader" component={QRReader} />
           <Stack.Screen name="Take Selfie Info" component={TakeSelfieInfo} />
-          <Stack.Screen name="QR Scan Result" component={QRScanResult} />
           <Stack.Screen name="Verification" component={Verification} />
           <Stack.Screen name="Result Screen" component={ResultScreen} />
         </Stack.Navigator>

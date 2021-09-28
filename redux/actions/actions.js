@@ -1,22 +1,32 @@
-import { VERIFICATION, VERIFICATION_FAILED } from './actionTypes';
+import { RESET_STORE, VERIFICATION, VERIFICATION_FAILED } from './actionTypes';
 import axios from "axios";
+const mime = require('mime');
 
 
-const BACKEND_URL = 'http://trustedrec.crabdance.com'
+const BACKEND_URL = 'https://trustedrecords-hague.uk.truststamp.net'
 
-export const verification = (imageUri,it2) => dispatch => {
+export const resetStore = ()=>dispatch=>{
+  return dispatch({
+    type:RESET_STORE,
+    payload: {}
+  })
+}
 
+export const verification = (imageURI,it2) => dispatch => {
+
+    var formData = new FormData();
+    formData.append("image", {
+      uri:imageURI,
+      type:mime.getType(imageURI),
+      name: imageURI.split('/').pop(),});
+    formData.append("it2",it2)
     let axiosConfig = {
         headers: {
-            'Content-Type': 'application/json'
-        }
+            'Content-type': 'multipart/form-data'
+          },
     }
-    const data = {
-        "image": imageUri,
-        "it2":it2
-    }
-    console.log(data,"VerificationData")
-    axios.post(`${BACKEND_URL}/in/decode/`, data, axiosConfig)
+    console.log(formData,'form data checking on aciton')
+    axios.post(`${BACKEND_URL}/it2photomatch/match_photo/`, formData, axiosConfig)
         .then(response => {
             console.log(response.data, 'CHECKING THE RESPONSE')
             return dispatch({
@@ -24,8 +34,7 @@ export const verification = (imageUri,it2) => dispatch => {
                 payload: response.data
             })
         })
-        .catch(error => {
-            console.log(error)  
+        .catch(error => { 
             if (error.response) {
                 // Request made and server responded
                 console.log(error.response.data);
@@ -41,7 +50,7 @@ export const verification = (imageUri,it2) => dispatch => {
 
             return dispatch({
                 type: VERIFICATION_FAILED,
-                payload: error.data
+                payload: error
             })
         })
 }

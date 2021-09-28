@@ -23,9 +23,11 @@
     "expo": "~41.0.1",
     "expo-barcode-scanner": "^10.1.2",
     "expo-camera": "~11.0.2",
+    "expo-image-manipulator": "~9.1.0",
     "expo-permissions": "~12.0.1",
     "expo-permissions-hooks": "^1.0.5",
     "expo-status-bar": "~1.0.4",
+    "mime": "^2.5.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-41.0.0.tar.gz",
@@ -50,6 +52,7 @@
     "react-native-screens": "~3.0.0",
     "react-native-simple-store": "^2.0.2",
     "react-native-storage": "^1.0.1",
+    "react-native-svg": "12.1.0",
     "react-native-web": "~0.13.12",
     "react-navigation": "^4.4.4",
     "react-navigation-stack": "^2.10.4",
@@ -57,8 +60,7 @@
     "react-use-permissions": "^1.0.1",
     "redux": "^4.1.0",
     "redux-thunk": "^2.3.0",
-    "sha256": "^0.2.0",
-    "react-native-svg": "12.1.0"
+    "sha256": "^0.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"

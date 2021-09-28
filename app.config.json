@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "trusted-records",
+    "name": "Qatar-POC",
     "icon": "./assets/TSLogoOnly.png",
     "version": "1.0.0",
-    "slug": "TrustedRecords",
+    "slug": "QatarPOC",
     "orientation": "portrait",
     "ios": {
-      "bundleIdentifier": "com.truststamp.hague",
+      "bundleIdentifier": "com.truststamp.qatar",
       "buildNumber": "1.0.0"
     },
     "android": {
-      "package": "com.truststamp.hague",
+      "package": "com.truststamp.qatar",
       "versionCode": 1
     }
   }

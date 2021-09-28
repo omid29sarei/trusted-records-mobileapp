@@ -9,6 +9,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 function QRReader({ route, navigation }) {
+    const mockIT2 = "[69, 25, 28, 47, -32, -82, -6, 28, 19, 40, -63, -66, 6, 22, 5, -43, 29, 29, -72, 16, 34, 3, 33, -7, 34, -36, -8, -22, 42, -100, -18, 67, 69, 18, -68, -9, -31, -16, -47, -121, 40, 20, -29, 9, -25, -33, 18, 27, -26, -34, -20, -28, -37, -50, 28, -20, -26, 5, 43, 43, -26, -4, 13, 23, -39, 12, 38, -7, -86, -51, -19, 6, -44, -42, 27, -53, 56, 85, -80, 18, 26, -77, 6, -25, -27, -41, -11, -90, 12, -33, 32, 92, -69, -35, -3, 42, -15, 104, 15, -6, -23, 24, -34, -20, 39, -59, 73, 48, -38, 43, -79, 0, -60, 14, 86, 31, 6, -48, -127, -104, -11, 31, -2, -89, 127, -57, 1, -6]"
+    const omidsIT2 = "[63,27,21,40,-22,-85,-6,19,17,43,-54,-56,7,19,9,-39,47,19,-79,11,36,3,31,-5,31,-33,-12,-21,42,-97,-15,71,58,13,-58,-14,-25,-16,-52,-127,34,14,-43,12,-21,-17,21,23,-38,-34,-19,-26,-37,-42,28,-26,-30,6,46,46,-32,-6,14,24,-42,3,41,-9,-84,-51,-12,-3,-42,-38,37,-54,71,90,-71,20,23,-77,4,-38,-18,-41,-10,-86,11,-34,31,94,-70,-40,0,40,-21,95,16,-13,-16,25,-33,-30,42,-60,77,44,-32,30,-89,4,-63,14,84,27,11,-46,-127,-104,-14,28,-12,-92,127,-56,-2,-5]"
     const finderWidth = 280;
     const finderHeight = 230;
     const width = Dimensions.get('window').width;
@@ -16,14 +18,13 @@ function QRReader({ route, navigation }) {
     const viewMinX = (width - finderWidth) / 2;
     const viewMinY = (height - finderHeight) / 2;
     const [hasPermission, setHasPermission] = useState(null);
-    const [type, setType] = useState(BarCodeScanner.Constants.Type.back);
+    const [type, setType] = useState(BarCodeScanner.Constants.Type.front);
     const [scanned, setScanned] = useState(false);
     const [successScanned, setSuccessScanned] = useState({ is_scanned: false, data: {} });
     useEffect(() => {
         (async () => {
             try {
                 const { status } = await BarCodeScanner.requestPermissionsAsync();
-                console.log(status, 'status of the permision')
                 setHasPermission(status === 'granted');
             }
             catch (e) {
@@ -46,13 +47,13 @@ function QRReader({ route, navigation }) {
                 // navigation.navigate("QR Scan Result")
             }
             if (data) {
-                console.log(data, 'QR data')
-                // storeData(data)
+                console.log(data,"CHECKING QR DATA")
                 setSuccessScanned({
                     is_scanned: true,
                     data: data
                 })
-                navigation.navigate('Take Selfie Info', { originalData: data})
+                
+                navigation.navigate('Take Selfie Info', { originalData: data,mockIT2})
             }
         }
     };
@@ -62,18 +63,14 @@ function QRReader({ route, navigation }) {
     if (hasPermission === false) {
         return <Text>No access to camera</Text>;
     }
-    const Test = () => {
-        navigation.navigate("Success Screen", { data: successScanned?.data })
-    }
-
+    // <Button style={styles.button} title="Scan Again" onPress={() => setScanned(false)}/>
     return (
         <View style={styles.container}>
             <BarCodeScanner onBarCodeScanned={handleBarCodeScanned}
                 style={styles.QRContainer}>
-                {scanned && <Button style={styles.button} title="Scan Again" onPress={() => setScanned(false)} />}
                 <BarcodeMask edgeColor="#62B1F6" showAnimatedLine edgeRadius={10} outerMaskOpacity={0.7} />
+                {scanned?undefined:<Button style={styles.button} title="Scan Again" onPress={() => setScanned(false)}/>}
                 <Text style={styles.text} >Scan Your Ticket</Text>
-                {console.log(successScanned)}
             </BarCodeScanner>
         </View>
     )
@@ -110,6 +107,7 @@ const styles = StyleSheet.create({
         // backgroundColor: 'white',
         // flexDirection: 'column',
         // justifyContent:'space-between',
+        zIndex: 100,
         alignItems: 'center',
         color: 'white',
         fontWeight: 'bold',

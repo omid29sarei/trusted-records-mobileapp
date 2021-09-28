@@ -5,8 +5,8 @@ import { Camera } from 'expo-camera';
 import { useSelector, useDispatch } from 'react-redux';
 import { verification } from '../redux/actions/actions';
 import Spinner from 'react-native-loading-spinner-overlay';
-// import * as ec from 'react-native-ecc'
-// import { Buffer } from 'buffer'
+import * as ImageManipulator from 'expo-image-manipulator';
+import { Platform} from 'react-native'
 
 function Verification({ route, navigation }) {
     const finderWidth = 280;
@@ -15,56 +15,77 @@ function Verification({ route, navigation }) {
     const height = Dimensions.get('window').height;
     const viewMinX = (width - finderWidth) / 2;
     const viewMinY = (height - finderHeight) / 2;
-    const { originalData } = route.params;
-    console.log(originalData,"originalData")
-    // console.log(sortedData, 'data from verification')
+    const { originalData,mockIT2 } = route.params;
     const [startCamera, setStartCamera] = React.useState(true);
     const [capturedImage, setCapturedImage] = React.useState(null);
+    const [ratio, setRatio] = React.useState('4:3');
     const [type, setType] = React.useState(Camera.Constants.Type.front);
-    const isVerificationSuccessfull = false
-    // useSelector(state => state.main?.verificationResponse?.success)
-    console.log(isVerificationSuccessfull, 'isVerificationSuccessfullisVerificationSuccessfull')
-    const dekKey = useSelector(state => state.main?.verificationResponse?.dek_key)
-    // const failedVerification = useSelector(state => state.main?.verificationFailedResponse)
-
+    const [androidRatio,setAndroidRatio] = React.useState(null)
+    const [photosubmitted, SetPhotosubmitted] = React.useState(null);
+    const isVerificationSuccessfull = useSelector(state => state.main?.verificationResponse?.success)
+    const isVerificationSuccessfull_api_response = useSelector(state => state.main?.verificationResponse?.message)
+    const verificationFailedResponse = useSelector(state => state.main?.verificationFailedResponse)
 
     let cameraText = "Take Photo";
     const dispatch = useDispatch();
-    const goToVerification = () => {
-        navigation.navigate('Verification')
-    }
+
     let camera
     const __takePicture = async () => {
         if (!camera) return
-        const photo = await camera.takePictureAsync({
-            base64: true
-        })
-        // dispatch(verification(photo?.base64, originalData))
-        setCapturedImage(photo?.base64)
+        const photo = await camera.takePictureAsync()
+        let resizedPhoto = await ImageManipulator.manipulateAsync(
+            photo.uri,
+            [{ resize: { width: 350 } }],
+            { compress: 1, format: "png", base64: false }
+        );
+        dispatch(verification(resizedPhoto?.uri, originalData))
+        setCapturedImage(photo)
+        SetPhotosubmitted(true)
 
     }
     React.useEffect(() => {
         (async () => {
             const { status } = await Camera.requestPermissionsAsync();
+            if (Platform.OS === 'android'){
+                const ratios = await camera.getSupportedRatiosAsync();
+                console.log(ratios,'ratios')
+                const wantedRatio = height/width
+                var bestRatio = 0;
+                var bestRatioError = 100000;
+                for (let i in ratios) {
+                    console.log(i,'CHECKING ALL THE RATIOS')
+                    const r = ratios[i].split(":")
+                    caculatedRatio =  parseInt(r[0])/parseInt(r[1])
+                    if (Math.abs(wantedRatio - caculatedRatio) < bestRatioError) {
+                        bestRatioError = Math.abs(wantedRatio - caculatedRatio)
+                        bestRatio = ratios[i]
+                    }
+                }
+                console.log(bestRatio,"bestRatio")
+                setAndroidRatio({bestRatio})
+    
+            }
             if (status === 'granted') {
                 setStartCamera(true)
             } else {
                 Alert.alert("Access denied")
             } Camera
-        })();
+        })();    
     }, []);
     React.useEffect(() => {
 
         if (isVerificationSuccessfull == false) {
-            navigation.navigate('Result Screen',{isVerificationSuccessfull})
+            navigation.navigate('Result Screen',{isVerificationSuccessfull,verificationFailedResponse,isVerificationSuccessfull_api_response})
+            SetPhotosubmitted(null)
         }
         if (isVerificationSuccessfull){
             navigation.navigate('Result Screen',{isVerificationSuccessfull})
+            SetPhotosubmitted(null)
         }
-    }, [isVerificationSuccessfull, cameraText])
+    }, [isVerificationSuccessfull,verificationFailedResponse, cameraText])
     return (
         <View style={styles.container}>
-            {isVerificationSuccessfull ?
+            {photosubmitted ?
                 (
                     <Spinner
                         visible={capturedImage ? true : false}
@@ -88,6 +109,7 @@ function Verification({ route, navigation }) {
                                 ref={(r) => {
                                     camera = r
                                 }}
+                                ratio={Platform.OS == "android" ? "16:9":ratio}
                                 type={type}
                             >
                             </Camera>
