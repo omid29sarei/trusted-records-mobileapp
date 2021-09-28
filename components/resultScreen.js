@@ -5,11 +5,12 @@ import Avatar from '../assets/avatar.png';
 import PassImage from '../assets/pass.png';
 import FailImage from '../assets/fail.png';
 import QRCode from 'react-native-qrcode-svg';
-import { useDispatch } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import { resetStore } from '../redux/actions/actions';
 
 function ResultScreen({ route, navigation }) {
     const { isVerificationSuccessfull,verificationFailedResponse,isVerificationSuccessfull_api_response } = route.params;
+    const isVerificationSuccessfullMessage = useSelector(state => state.main?.verificationResponse?.message)
     console.log(verificationFailedResponse,'verificationFailedResponse from result')
     console.log(isVerificationSuccessfull,'isVerificationSuccessfull from result')
     const dispatch = useDispatch();
@@ -29,11 +30,11 @@ function ResultScreen({ route, navigation }) {
                 
                 
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                    <View>
+                    <View style={{ paddingTop:30}}>
                         <Image style={{ width: 300, height: 300, resizeMode: 'cover', borderRadius: 20 }} source={isVerificationSuccessfull? PassImage:FailImage} />
                     </View>
                     <Text style={{ textAlign: 'center', fontWeight: 'bold', marginTop: 15, marginBottom: 15, fontSize: 25 }}>Identity {isVerificationSuccessfull? "Match":"Not Match"}</Text>
-                    <Text style={{ color: 'black', marginBottom: 45, textAlign: 'center', paddingLeft: 50, paddingRight: 50 }}>The provided identity has been matched with the current user</Text>
+                    <Text style={{ color: 'black', marginBottom: 45, textAlign: 'center', paddingLeft: 50, paddingRight: 50 }}>{isVerificationSuccessfullMessage}</Text>
                     <TouchableOpacity
                         style={styles.button}
                         onPress={()=>{
