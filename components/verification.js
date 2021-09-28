@@ -218,12 +218,3 @@ const styles = StyleSheet.create({
 })
 
 export default Verification;
-
-
-// <TouchableOpacity
-//     style={styles.button}
-//     onPress={__takePicture}
-// >
-//     {isVerificationSuccessfull == false ? <Text>The verification failed. Please Take another photo</Text> : null}
-//     <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 20, padding: 15, textAlign: 'center' }}>{cameraText}</Text>
-// </TouchableOpacity>
